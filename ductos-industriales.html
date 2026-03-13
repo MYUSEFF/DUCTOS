@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>DuctCALC — Aspiración Industrial</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@400;700&display=swap');
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--accent:#e6a817;--green:#3fb950;--blue:#58a6ff;--red:#f85149;--text:#e6edf3;--muted:#7d8590;--filter:#c084fc;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+header{background:var(--panel);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;color:var(--accent);}
+.logo span{color:var(--muted);font-weight:400;}
+.tbtn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:4px;cursor:pointer;font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;letter-spacing:.5px;transition:all .15s;white-space:nowrap;}
+.tbtn:hover{border-color:var(--accent);color:var(--text);}
+.tbtn.active{background:var(--accent);border-color:var(--accent);color:#000;}
+.tbtn.tred{border-color:var(--red);color:var(--red);}
+.tbtn.tred:hover{background:rgba(248,81,73,.1);}
+.tbtn.tpur{border-color:var(--filter);color:var(--filter);}
+.tbtn.tpur.active{background:var(--filter);color:#000;}
+.sep{width:1px;height:20px;background:var(--border);margin:0 1px;flex-shrink:0;}
+.stat{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);display:flex;gap:12px;align-items:center;}
+.main{display:flex;flex:1;overflow:hidden;}
+.lp{width:205px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.ps{border-bottom:1px solid var(--border);padding:11px;}
+.pt{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.lg{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-bottom:5px;}
+.ld{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ll{width:20px;height:3px;border-radius:2px;flex-shrink:0;}
+.ins{font-size:11px;color:var(--muted);line-height:1.7;}
+.ins li{margin-left:12px;margin-bottom:2px;}
+kbd{background:#1c2128;border:1px solid var(--border);border-radius:3px;padding:1px 4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text);}
+.cw{flex:1;position:relative;overflow:hidden;background:var(--bg);background-image:linear-gradient(rgba(48,54,61,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(48,54,61,.3) 1px,transparent 1px);background-size:40px 40px;background-position:-1px -1px;}
+canvas{position:absolute;top:0;left:0;}
+.rp{width:290px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.rh{padding:10px 12px;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.bdg{font-size:9px;font-weight:700;padding:2px 5px;border-radius:2px;letter-spacing:1px;}
+.bdg-b{background:var(--blue);color:#000;}
+.bdg-g{background:var(--green);color:#000;}
+.bdg-r{background:var(--red);color:#fff;}
+.bdg-y{background:var(--accent);color:#000;}
+.bdg-p{background:var(--filter);color:#000;}
+.pf{padding:11px;display:flex;flex-direction:column;gap:9px;}
+.fg{display:flex;flex-direction:column;gap:3px;}
+label{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;}
+.ir{display:flex;align-items:stretch;}
+.ir input{flex:1;background:#0d1117;border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:4px 0 0 4px;font-family:'Share Tech Mono',monospace;font-size:13px;min-width:0;}
+.ir input:focus{outline:none;border-color:var(--blue);}
+.ir input.auto-q{color:var(--accent);border-color:rgba(230,168,23,.5);}
+.ut{background:#1c2128;border:1px solid var(--border);border-left:none;color:var(--muted);padding:5px 7px;font-family:'Share Tech Mono',monospace;font-size:11px;border-radius:0 4px 4px 0;white-space:nowrap;}
+.cbtn{background:var(--accent);color:#000;border:none;padding:7px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .15s;width:100%;}
+.cbtn:hover{filter:brightness(1.1);}
+.cbtn.ob{background:transparent;border:1px solid var(--blue);color:var(--blue);}
+.cbtn.or{background:transparent;border:1px solid var(--red);color:var(--red);}
+.dir-row{display:flex;gap:5px;}
+.dbtn{flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 3px;border-radius:4px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;text-align:center;transition:all .15s;}
+.dbtn:hover,.dbtn.active{border-color:var(--blue);color:var(--blue);background:rgba(88,166,255,.1);}
+.rs{padding:11px;border-top:1px solid var(--border);}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.rc{background:#0d1117;border:1px solid var(--border);border-radius:4px;padding:6px;}
+.rc.s2{grid-column:1/-1;}
+.rc.cy{border-color:var(--accent);}
+.rc.cg{border-color:var(--green);} .rc.cb{border-color:#58a6ff;} .rc.cb .rv{color:#58a6ff;}
+.rc.cr{border-color:var(--red);}
+.rl{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+.rv{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:700;color:var(--accent);}
+.rv.big{font-size:19px;}
+.rv.rg{color:var(--green);}
+.rv.rr{color:var(--red);}
+.ru{font-size:9px;color:var(--muted);margin-left:2px;}
+.nt{width:100%;border-collapse:collapse;font-size:11px;font-family:'Share Tech Mono',monospace;}
+.nt th{background:#0d1117;color:var(--muted);padding:3px 5px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.nt td{padding:3px 5px;border-bottom:1px solid rgba(48,54,61,.4);}
+.bb{background:var(--panel);border-top:1px solid var(--border);padding:6px 14px;display:flex;gap:18px;flex-shrink:0;}
+.bi{display:flex;flex-direction:column;gap:1px;}
+.bl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.bv{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent);font-weight:700;}
+.emp{padding:20px 12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.7;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.note{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.note.warn{color:#f0b928;}
+.note.ok{color:var(--green);}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">DUCT<span>CALC</span></div>
+  <div class="sep"></div>
+  <button class="tbtn active" id="btn-draw"   onclick="setMode('draw')">✏ TRAMO</button>
+  <button class="tbtn"        id="btn-select" onclick="setMode('select')">↖ SELEC.</button>
+  <button class="tbtn tpur"   id="btn-filter" onclick="setMode('filter')" title="Colocar Filtro de Mangas">🔷 FILTRO</button>
+  <div class="sep"></div>
+  <button class="tbtn" onclick="calcAll()">⚡ CALCULAR TODO</button>
+  <button class="tbtn" onclick="saveProject()">💾 GUARDAR</button>
+  <button class="tbtn" onclick="document.getElementById('file-load').click()">📂 CARGAR</button>
+  <input type="file" id="file-load" accept=".ductcalc,.json" style="display:none" onchange="loadProject(event)">
+  <button class="tbtn" onclick="doExport()">⬇ CSV</button>
+  <button class="tbtn tred" onclick="clearAll()">🗑 LIMPIAR</button>
+  <div class="stat">
+    <span id="mlbl">MODO: DIBUJAR TRAMO</span>
+    <span id="clbl">Tramos: 0 | Nodos: 0</span>
+  </div>
+</header>
+
+<div class="main">
+  <div class="lp">
+    <div class="ps">
+      <div class="pt">Leyenda</div>
+      <div class="lg"><div class="ld" style="background:var(--green)"></div> Boca de aspiración</div>
+      <div class="lg"><div class="ld" style="background:var(--red)"></div> Unión en Y (3 tramos)</div>
+      <div class="lg"><div class="ld" style="background:var(--accent)"></div> Nodo de paso (2 tramos)</div>
+      <div class="lg"><div class="ld" style="background:var(--filter)"></div> Filtro de mangas</div>
+      <div class="lg"><div class="ll" style="background:var(--blue)"></div> Tramo manual</div>
+      <div class="lg"><div class="ll" style="background:var(--accent)"></div> Tramo automático ∑</div>
+      <div class="lg" style="margin-top:2px">▶ flecha = sentido del flujo</div>
+    </div>
+    <div class="ps">
+      <div class="pt">Instrucciones</div>
+      <ul class="ins">
+        <li><b style="color:var(--text)">TRAMO:</b> clic agrega puntos, doble clic termina</li>
+        <li><b style="color:var(--text)">FILTRO:</b> clic en el canvas coloca el filtro de mangas</li>
+        <li><b style="color:var(--text)">SELEC.:</b> clic en tramo o nodo para editar</li>
+        <li><kbd>ESC</kbd> cancela · <kbd>Del</kbd> elimina</li>
+        <li>Solo las <b style="color:var(--green)">bocas</b> llevan caudal manual</li>
+        <li>⚡ propaga y calcula toda la red</li>
+      </ul>
+    </div>
+    <div class="ps">
+      <div class="pt">Parámetros globales</div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div class="fg"><label>Velocidad de diseño</label><div class="ir"><input type="number" id="gv" value="20" min="1" max="60"><div class="ut">m/s</div></div></div>
+        <div class="fg"><label>Densidad del aire</label><div class="ir"><input type="number" id="gr" value="1.2" step="0.01"><div class="ut">kg/m³</div></div></div>
+        <div class="fg"><label>Precio chapa</label><div class="ir"><input type="number" id="gp" value="2.5" step="0.1"><div class="ut">$/kg</div></div></div>
+        <div class="fg"><label>Costo hora hombre</label><div class="ir"><input type="number" id="ghh" value="15" step="0.5"><div class="ut">$/h</div></div></div>
+        <div class="fg"><label>ΔP filtro sucio</label><div class="ir"><input type="number" id="gdpf" value="150" min="0" step="10"><div class="ut">mmca</div></div></div>
+        <div class="fg">
+          <label>Tipo de conducto</label>
+          <div style="display:flex;gap:5px;margin-top:2px">
+            <button id="btn-engr" class="tbtn active" style="flex:1;font-size:11px" onclick="setJointType('engrafado')">ENGRAFADO</button>
+            <button id="btn-sold" class="tbtn" style="flex:1;font-size:11px" onclick="setJointType('soldado')">SOLDADO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="pt">Resumen de red</div>
+      <div id="nsum" style="font-size:11px;color:var(--muted);line-height:1.9">Sin datos todavía.</div>
+    </div>
+  </div>
+
+  <div class="cw" id="cw"><canvas id="cv"></canvas></div>
+
+  <div class="rp">
+    <div class="rh" id="rh">PROPIEDADES</div>
+    <div id="rc">
+      <div class="emp">
+        <div style="font-size:28px;margin-bottom:8px">📐</div>
+        Cambiá a <b style="color:var(--text)">SELEC.</b> y hacé clic sobre un tramo o nodo para ver y editar sus datos.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bb">
+  <div class="bi"><div class="bl">Tramos calc.</div><div class="bv" id="bt">0</div></div>
+  <div class="bi"><div class="bl">Long. total</div><div class="bv" id="blen">— m</div></div>
+  <div class="bi"><div class="bl">Peso chapa</div><div class="bv" id="bpeso">— kg</div></div>
+  <div class="bi"><div class="bl">Peso bridas</div><div class="bv" id="bpbri">— kg</div></div>
+  <div class="bi"><div class="bl">Costo material</div><div class="bv" id="bcmat">$—</div></div>
+  <div class="bi"><div class="bl">Costo M.O.</div><div class="bv" id="bcmo">$—</div></div>
+  <div class="bi"><div class="bl">Costo total</div><div class="bv" id="bcosto" style="color:var(--green)">$—</div></div>
+  <div class="bi"><div class="bl">Horas fab.</div><div class="bv" id="bhoras">— h</div></div>
+  <div class="bi"><div class="bl">Q en colector</div><div class="bv" id="bq">— m³/min</div></div>
+  <div class="bi"><div class="bl">ΔP ramal crítico</div><div class="bv" id="bdp" style="color:var(--red)">— mmca</div></div>
+</div>
+
+<script>
+// ================================================================
+// ESTADO GLOBAL
+// ================================================================
+let mode = 'draw';
+// seg: {id, pts, caudal(m³/min)|null, largo, curvas, caudalAuto, upstream, downstream, result, _nA, _nB, _res}
+let segs  = [];
+// node: {id, x, y, segIds, type:'leaf'|'union'|'pass'|'filter'|'error', _qIn, _qOut}
+let nodes = [];
+// filter: {x, y, largoFV, curvasFV, largoDesc, curvasDesc, resultFV, resultDesc}
+let filterUnit = null;
+
+let selSeg=null, selNode=null, selFilter=false;
+let criticalPath = []; // IDs de tramos en el ramal crítico
+let jointType = 'engrafado'; // 'engrafado' | 'soldado'
+let drawing=false, wip=[], mouse={x:0,y:0};
+let segCtr=0, nodeCtr=0;
+const GRID=20;
+
+// ================================================================
+// CANVAS
+// ================================================================
+const cw  = document.getElementById('cw');
+const cv  = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+function resize(){ cv.width=cw.clientWidth; cv.height=cw.clientHeight; render(); }
+window.addEventListener('resize', resize);
+resize();
+
+// ================================================================
+// HELPERS
+// ================================================================
+const snap = v => Math.round(v/GRID)*GRID;
+const ptKey = (x,y) => `${x},${y}`;
+function polyLen(pts){ let l=0; for(let i=0;i<pts.length-1;i++) l+=Math.hypot(pts[i+1].x-pts[i].x,pts[i+1].y-pts[i].y); return l; }
+function midPt(pts){
+  const half=polyLen(pts)/2; let acc=0;
+  for(let i=0;i<pts.length-1;i++){
+    const dx=pts[i+1].x-pts[i].x, dy=pts[i+1].y-pts[i].y, d=Math.hypot(dx,dy);
+    if(acc+d>=half){ const t=(half-acc)/d; return {x:pts[i].x+t*dx, y:pts[i].y+t*dy}; }
+    acc+=d;
+  }
+  return pts[Math.floor(pts.length/2)];
+}
+function nearPoly(px,py,pts,thr){
+  for(let i=0;i<pts.length-1;i++){
+    const ax=pts[i].x,ay=pts[i].y,bx=pts[i+1].x,by=pts[i+1].y;
+    const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
+    let t=l2===0?0:((px-ax)*dx+(py-ay)*dy)/l2; t=Math.max(0,Math.min(1,t));
+    if(Math.hypot(px-(ax+t*dx),py-(ay+t*dy))<thr) return true;
+  }
+  return false;
+}
+function snapPt(rx,ry){
+  // Snap al filtro de mangas si está cerca
+  if(filterUnit && Math.hypot(filterUnit.x-rx,filterUnit.y-ry)<20) return {x:filterUnit.x,y:filterUnit.y,filter:true};
+  for(let n of nodes) if(Math.hypot(n.x-rx,n.y-ry)<14) return {x:n.x,y:n.y,node:n};
+  return {x:snap(rx),y:snap(ry)};
+}
+
+// ================================================================
+// NODOS — solo extremos de tramos
+// ================================================================
+function rebuildNodes(){
+  const map={};
+  for(let s of segs){
+    for(let p of [s.pts[0], s.pts[s.pts.length-1]]){
+      const k=ptKey(p.x,p.y);
+      if(!map[k]) map[k]={x:p.x,y:p.y,segIds:[]};
+      if(!map[k].segIds.includes(s.id)) map[k].segIds.push(s.id);
+    }
+  }
+  const old=nodes;
+  nodes=[];
+  for(let k in map){
+    const m=map[k], deg=m.segIds.length;
+    const isFilter = filterUnit && m.x===filterUnit.x && m.y===filterUnit.y;
+    // Tipos: 'filter' | 'leaf' (1 tramo) | 'union' (3 tramos = Y) | 'pass' (2 tramos) | 'error' (>3)
+    let type;
+    if(isFilter)  type='filter';
+    else if(deg===1) type='leaf';
+    else if(deg===2) type='pass';
+    else if(deg===3) type='union';   // la "Y": 2 entran, 1 sale
+    else             type='error';   // no debería ocurrir
+    const prevNode = old.find(n=>n.x===m.x&&n.y===m.y);
+    // Preservar inlets si ya existía el nodo
+    const prevInlets = (prevNode && prevNode.inlets) ? prevNode.inlets.filter(cid=>m.segIds.includes(cid)) : [];
+    nodes.push({id:prevNode?prevNode.id:nodeCtr++, x:m.x, y:m.y, segIds:m.segIds, type, inlets:prevInlets, _qIn:0, _qOut:0});
+  }
+  if(filterUnit && !nodes.find(n=>n.x===filterUnit.x&&n.y===filterUnit.y)){
+    nodes.push({id:nodeCtr++, x:filterUnit.x, y:filterUnit.y, segIds:[], type:'filter', _qIn:0, _qOut:0});
+  }
+  for(let s of segs){
+    const p0=s.pts[0], pN=s.pts[s.pts.length-1];
+    s._nA=nodes.find(n=>n.x===p0.x&&n.y===p0.y)?.id??null;
+    s._nB=nodes.find(n=>n.x===pN.x&&n.y===pN.y)?.id??null;
+  }
+  updateSummary();
+  document.getElementById('clbl').textContent=`Tramos: ${segs.length} | Nodos: ${nodes.length}`;
+}
+
+function updateSummary(){
+  const lv=nodes.filter(n=>n.type==='leaf').length;
+  const un=nodes.filter(n=>n.type==='union').length;
+  const er=nodes.filter(n=>n.type==='error').length;
+  const ft=filterUnit?1:0;
+  document.getElementById('nsum').innerHTML=
+    `<b style="color:var(--text)">${segs.length}</b> tramos<br>
+     <b style="color:var(--text)">${nodes.length}</b> nodos<br>
+     <span style="color:var(--green)">◉</span> ${lv} bocas/terminales<br>
+     <span style="color:var(--red)">◉</span> ${un} uniones en Y<br>
+     <span style="color:var(--filter)">◈</span> ${ft} filtro de mangas`
+     +(er>0?`<br><span style="color:#f85149">⚠ ${er} nodo(s) con >3 tramos</span>`:'');
+}
+
+// ================================================================
+// EVENTOS
+// ================================================================
+cv.addEventListener('mousemove', e=>{
+  const r=cv.getBoundingClientRect();
+  mouse=snapPt(e.clientX-r.left, e.clientY-r.top);
+  render();
+});
+cv.addEventListener('click',    e=>{ if(mode==='draw') onDraw(e); else if(mode==='filter') onPlaceFilter(e); else onSel(e); });
+cv.addEventListener('dblclick', e=>{ if(mode==='draw'&&drawing&&wip.length>=2) finishSeg(); });
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ drawing=false; wip=[]; render(); }
+  if(e.key==='Delete'){
+    if(selSeg!==null) delSeg(selSeg);
+    else if(selFilter){ filterUnit=null; selFilter=false; rebuildNodes(); showEmpty(); render(); }
+  }
+});
+
+function onDraw(e){
+  const r=cv.getBoundingClientRect();
+  const sp=snapPt(e.clientX-r.left, e.clientY-r.top);
+  if(!drawing){ drawing=true; wip=[{x:sp.x,y:sp.y}]; }
+  else{
+    const last=wip[wip.length-1];
+    if(Math.hypot(last.x-sp.x,last.y-sp.y)<5) return;
+    wip.push({x:sp.x,y:sp.y});
+  }
+  render();
+}
+
+function finishSeg(){
+  if(wip.length<2){ drawing=false; wip=[]; return; }
+  // Validar que los extremos no tengan ya 3 tramos (máximo para una unión en Y)
+  const p0=wip[0], pN=wip[wip.length-1];
+  for(let endPt of [p0, pN]){
+    const existing=nodes.find(n=>n.x===endPt.x&&n.y===endPt.y);
+    if(existing && existing.type!=='filter' && existing.segIds.length>=3){
+      alert(`⚠ El punto (${endPt.x}, ${endPt.y}) ya tiene 3 tramos conectados.\nCada nodo admite máximo 3 tramos (unión en Y: 2 entran, 1 sale).\nConectá el nuevo tramo a un punto diferente.`);
+      drawing=false; wip=[]; render(); return;
+    }
+  }
+  const s={id:segCtr++,pts:[...wip],caudal:null,largo:null,curvas:0,dOverride:null,
+           caudalAuto:false,upstream:null,downstream:null,result:null,_nA:null,_nB:null,_res:false};
+  segs.push(s);
+  rebuildNodes();
+  drawing=false; wip=[];
+  // Quedarse en modo dibujar para continuar trazando
+  render();
+}
+
+function onPlaceFilter(e){
+  const r=cv.getBoundingClientRect();
+  const sp=snapPt(e.clientX-r.left, e.clientY-r.top);
+  filterUnit={x:sp.x, y:sp.y, largoFV:null, curvasFV:0, largoDesc:null, curvasDesc:0, resultFV:null, resultDesc:null};
+  rebuildNodes();
+  setMode('select');
+  selFilter=true; selSeg=null; selNode=null;
+  showFilterProps();
+  render();
+}
+
+function onSel(e){
+  const r=cv.getBoundingClientRect();
+  const x=e.clientX-r.left, y=e.clientY-r.top;
+  // Filtro primero
+  if(filterUnit && Math.hypot(filterUnit.x-x,filterUnit.y-y)<22){
+    selFilter=true; selSeg=null; selNode=null;
+    showFilterProps(); render(); return;
+  }
+  // Nodos
+  for(let n of nodes){
+    if(Math.hypot(n.x-x,n.y-y)<13){ selNode=n.id; selSeg=null; selFilter=false; showNode(n.id); render(); return; }
+  }
+  // Tramos
+  for(let s of segs){
+    if(nearPoly(x,y,s.pts,8)){ selSeg=s.id; selNode=null; selFilter=false; showSeg(s.id); render(); return; }
+  }
+  selSeg=null; selNode=null; selFilter=false;
+  showEmpty(); render();
+}
+
+function setMode(m){
+  mode=m; drawing=false; wip=[];
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  const btnId = m==='filter'?'btn-filter': m==='select'?'btn-select':'btn-draw';
+  document.getElementById(btnId).classList.add('active');
+  const lbl = {draw:'DIBUJAR TRAMO', select:'SELECCIONAR', filter:'COLOCAR FILTRO'}[m]||m;
+  document.getElementById('mlbl').textContent='MODO: '+lbl;
+  cv.style.cursor = m==='select'?'default':'crosshair';
+  render();
+}
+
+// ================================================================
+// RENDER
+// ================================================================
+function render(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+
+  // ---- Tramos ----
+  for(let s of segs){
+    const isSel=s.id===selSeg;
+    const hasQ=s.caudal!==null&&s.caudal>0;
+    const isCrit = criticalPath.includes(s.id);
+    let lc='#3a4048';
+    if(isSel)                    lc='#f0f6fc';
+    else if(isCrit)              lc='#f85149';   // rojo = ramal crítico
+    else if(hasQ&&s.caudalAuto)  lc='#e6a817';
+    else if(hasQ&&!s.caudalAuto) lc='#58a6ff';
+    ctx.lineWidth=isSel?3:isCrit?3:2; ctx.strokeStyle=lc;
+    ctx.setLineDash(hasQ?[]:[7,4]);
+    ctx.beginPath(); ctx.moveTo(s.pts[0].x,s.pts[0].y);
+    for(let i=1;i<s.pts.length;i++) ctx.lineTo(s.pts[i].x,s.pts[i].y);
+    ctx.stroke(); ctx.setLineDash([]);
+    if(s.upstream!==null&&s.downstream!==null) drawArrow(s,lc);
+    // Etiqueta
+    const mp=midPt(s.pts);
+    ctx.font='10px Share Tech Mono';
+    const qTxt=hasQ?` ${s.caudalAuto?'∑':''}${parseFloat(s.caudal).toFixed(2)}m³/min`:'';
+    ctx.fillStyle=isSel?'#f0f6fc':(hasQ?lc:'#555e6a');
+    ctx.fillText(`S${s.id}${qTxt}`,mp.x+4,mp.y-4);
+    if(s.result){
+      ctx.fillStyle='#e6a817'; ctx.font='bold 10px Share Tech Mono';
+      ctx.fillText(`Ø${s.result.diametro}mm`,mp.x+4,mp.y+13);
+    }
+  }
+
+  // ---- Nodos ----
+  for(let n of nodes){
+    if(n.type==='filter') continue; // el filtro se dibuja aparte
+    const isSel=n.id===selNode;
+    const col=n.type==='leaf'?'#3fb950':n.type==='union'?'#f85149':'#e6a817';
+    const nr=n.type==='union'?8:6;
+    if(n.type==='union'){
+      ctx.beginPath(); ctx.arc(n.x,n.y,nr+5,0,Math.PI*2);
+      ctx.fillStyle='rgba(248,81,73,.08)'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(n.x,n.y,isSel?nr+3:nr,0,Math.PI*2);
+    ctx.fillStyle=isSel?col:'#0d1117'; ctx.fill();
+    ctx.strokeStyle=col; ctx.lineWidth=isSel?3:2; ctx.stroke();
+    // Q acumulado sobre nodo
+    if(n._qOut>0&&n.type!=='leaf'){
+      const lbl=`∑${n._qOut.toFixed(2)}`;
+      ctx.font='bold 10px Share Tech Mono';
+      const tw=ctx.measureText(lbl).width;
+      ctx.fillStyle='rgba(13,17,23,.9)';
+      ctx.fillRect(n.x-tw/2-3,n.y-nr-19,tw+6,14);
+      ctx.strokeStyle=col; ctx.lineWidth=0.7;
+      ctx.strokeRect(n.x-tw/2-3,n.y-nr-19,tw+6,14);
+      ctx.fillStyle=col; ctx.fillText(lbl,n.x-tw/2,n.y-nr-8);
+    }
+    // Caudal de boca
+    if(n.type==='leaf'){
+      const cs=segs.find(s=>n.segIds.includes(s.id)&&s.caudal);
+      if(cs){ ctx.font='9px Share Tech Mono'; ctx.fillStyle='#3fb950'; ctx.fillText(parseFloat(cs.caudal).toFixed(2)+'m³/min',n.x+nr+3,n.y+3); }
+    }
+  }
+
+  // ---- Filtro de mangas ----
+  if(filterUnit) drawFilterIcon(filterUnit.x, filterUnit.y, selFilter);
+
+  // ---- Línea en construcción ----
+  if(drawing&&wip.length>0){
+    ctx.strokeStyle='#e6a817'; ctx.lineWidth=2; ctx.setLineDash([8,4]);
+    ctx.beginPath(); ctx.moveTo(wip[0].x,wip[0].y);
+    for(let i=1;i<wip.length;i++) ctx.lineTo(wip[i].x,wip[i].y);
+    ctx.lineTo(mouse.x,mouse.y);
+    ctx.stroke(); ctx.setLineDash([]);
+    for(let p of wip){ ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fillStyle='#e6a817'; ctx.fill(); }
+    if(mouse.filter||mouse.node){ ctx.beginPath(); ctx.arc(mouse.x,mouse.y,14,0,Math.PI*2); ctx.strokeStyle='#e6a817'; ctx.lineWidth=1.5; ctx.stroke(); }
+  }
+
+  // Cursor fantasma para colocar filtro
+  if(mode==='filter'){
+    drawFilterIcon(mouse.x, mouse.y, false, 0.45);
+  }
+}
+
+// ---- Icono Filtro de Mangas ----
+function drawFilterIcon(x, y, selected, alpha){
+  const a   = alpha !== undefined ? alpha : 1;
+  const col = selected ? '#f0f6fc' : '#c084fc';
+  ctx.save();
+  ctx.globalAlpha = a;
+  ctx.translate(x, y);
+
+  // ── Layout vertical (de abajo hacia arriba):
+  //   entrada (abajo) → filtro → conducto FV → ventilador → descarga (arriba)
+  const FW=30, FH=38;   // filtro
+  const fanR=14;         // radio ventilador
+  const ductH=18;        // conducto filtro→ventilador
+  const fanCY = -(FH/2 + ductH + fanR); // centro ventilador
+
+  // ── FILTRO (cuerpo) ──
+  ctx.strokeStyle=col; ctx.lineWidth=selected?2.5:2;
+  ctx.fillStyle='rgba(192,132,252,0.1)';
+  ctx.beginPath(); ctx.rect(-FW/2,-FH/2,FW,FH); ctx.fill(); ctx.stroke();
+  // mangas
+  ctx.lineWidth=1.2;
+  const bw=5,bh=16;
+  for(let i=-1;i<=1;i++){
+    ctx.fillStyle='rgba(192,132,252,0.2)';
+    ctx.beginPath(); ctx.roundRect(i*(bw+2)-bw/2,-bh/2,bw,bh,2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(i*(bw+2),-bh/2,bw/2,Math.PI,0); ctx.stroke();
+  }
+  // etiqueta filtro
+  ctx.font='bold 8px Share Tech Mono'; ctx.fillStyle=col; ctx.textAlign='center';
+  ctx.fillText('FILTRO', 0, FH/2+10);
+
+  // ── CONDUCTO FILTRO → VENTILADOR ──
+  ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+  ctx.beginPath();
+  ctx.moveTo(-4, -FH/2);
+  ctx.lineTo(-4, fanCY+fanR);
+  ctx.moveTo( 4, -FH/2);
+  ctx.lineTo( 4, fanCY+fanR);
+  ctx.stroke(); ctx.setLineDash([]);
+  // flecha hacia arriba en mitad del conducto
+  const arY = -(FH/2 + ductH/2);
+  ctx.beginPath(); ctx.moveTo(0,arY+5); ctx.lineTo(0,arY-5);
+  ctx.moveTo(-3,arY-2); ctx.lineTo(0,arY-6); ctx.lineTo(3,arY-2);
+  ctx.lineWidth=1.2; ctx.stroke();
+
+  // ── VENTILADOR (círculo + aspas) ──
+  ctx.strokeStyle=col; ctx.lineWidth=selected?2:1.5;
+  ctx.fillStyle='rgba(192,132,252,0.1)';
+  ctx.beginPath(); ctx.arc(0,fanCY,fanR,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  // aspas (3 líneas curvas simplificadas)
+  ctx.lineWidth=1.2;
+  for(let i=0;i<3;i++){
+    const ang=i*Math.PI*2/3;
+    const x1=Math.cos(ang)*4, y1=Math.sin(ang)*4+fanCY;
+    const x2=Math.cos(ang+1)*fanR*0.8, y2=Math.sin(ang+1)*fanR*0.8+fanCY;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.quadraticCurveTo(
+      Math.cos(ang+0.5)*fanR*0.6, Math.sin(ang+0.5)*fanR*0.6+fanCY, x2,y2);
+    ctx.stroke();
+  }
+  // etiqueta ventilador
+  ctx.font='bold 8px Share Tech Mono'; ctx.fillStyle=col; ctx.textAlign='center';
+  ctx.fillText('VENT.', 0, fanCY+fanR+10);
+
+  // ── TRAMO DE DESCARGA (arriba del ventilador) ──
+  const discY = fanCY - fanR;
+  ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(-4, discY); ctx.lineTo(-4, discY-22);
+  ctx.moveTo( 4, discY); ctx.lineTo( 4, discY-22);
+  ctx.stroke(); ctx.setLineDash([]);
+  // flecha salida
+  ctx.beginPath(); ctx.moveTo(0,discY-10); ctx.lineTo(0,discY-22);
+  ctx.moveTo(-3,discY-19); ctx.lineTo(0,discY-24); ctx.lineTo(3,discY-19);
+  ctx.lineWidth=1.2; ctx.stroke();
+  ctx.font='bold 8px Share Tech Mono'; ctx.fillStyle=col; ctx.textAlign='center';
+  ctx.fillText('DESC.', 0, discY-28);
+
+  // datos tramos si existen
+  if(filterUnit){
+    ctx.font='8px Share Tech Mono'; ctx.fillStyle='rgba(192,132,252,0.7)';
+    if(filterUnit.largoFV)   ctx.fillText(filterUnit.largoFV+'m', FW/2+4, -(FH/2+ductH/2));
+    if(filterUnit.largoDesc) ctx.fillText(filterUnit.largoDesc+'m', FW/2+4, discY-14);
+  }
+
+  // Borde de selección
+  if(selected){
+    const top=discY-28; const bot=FH/2+14;
+    ctx.strokeStyle='rgba(240,246,252,0.3)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.rect(-FW/2-6, top-4, FW+12, bot-top+8);
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  ctx.textAlign='left';
+  ctx.restore();
+}
+
+function drawArrow(s, color){
+  const upN=nodes.find(n=>n.id===s.upstream), dnN=nodes.find(n=>n.id===s.downstream);
+  if(!upN||!dnN) return;
+  const p0=s.pts[0], pN=s.pts[s.pts.length-1];
+  const d0=Math.hypot(p0.x-upN.x,p0.y-upN.y), dN=Math.hypot(pN.x-upN.x,pN.y-upN.y);
+  const pts=d0<dN?s.pts:[...s.pts].reverse();
+  const total=polyLen(pts); if(total<25) return;
+  for(let frac of (total>80?[0.35,0.65]:[0.5])){
+    const target=total*frac; let acc=0,ax=0,ay=0,angle=0;
+    for(let i=0;i<pts.length-1;i++){
+      const dx=pts[i+1].x-pts[i].x,dy=pts[i+1].y-pts[i].y,d=Math.hypot(dx,dy);
+      if(acc+d>=target){const t=(target-acc)/d;ax=pts[i].x+t*dx;ay=pts[i].y+t*dy;angle=Math.atan2(dy,dx);break;}
+      acc+=d;
+    }
+    ctx.save(); ctx.translate(ax,ay); ctx.rotate(angle);
+    ctx.beginPath(); ctx.moveTo(8,0); ctx.lineTo(-5,-5); ctx.lineTo(-3,0); ctx.lineTo(-5,5);
+    ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+    ctx.restore();
+  }
+}
+
+// ================================================================
+// PANEL DERECHO — Tramo
+// ================================================================
+function showSeg(id){
+  const s=segs.find(x=>x.id===id); if(!s) return;
+  const nA=nodes.find(n=>n.id===s._nA), nB=nodes.find(n=>n.id===s._nB);
+  const isLeaf=(nA?.type==='leaf')||(nB?.type==='leaf');
+  const estLen=((polyLen(s.pts)/40)*0.5).toFixed(1);
+  let tlbl='TRAMO', tbdg='bdg-b';
+  if(isLeaf){tlbl='BOCA DE ASPIRACIÓN';tbdg='bdg-g';}
+  else if(nA?.type==='union'||nB?.type==='union'||nA?.type==='filter'||nB?.type==='filter'||nA?.type==='error'||nB?.type==='error'){tlbl='COLECTOR/RAMAL';tbdg='bdg-r';}
+
+  const qVal = s.caudal !== null ? s.caudal : '';
+
+  document.getElementById('rh').innerHTML=
+    `TRAMO <span class="bdg ${tbdg}">S${id}</span>
+     <span style="font-size:10px;color:var(--muted);font-weight:400;margin-left:2px">${tlbl}</span>
+     <button class="cbtn or" style="margin-left:auto;padding:2px 7px;font-size:10px;width:auto" onclick="delSeg(${id})">✕</button>`;
+
+  document.getElementById('rc').innerHTML=`
+  <div class="pf">
+    <div class="fg">
+      <label>Caudal${!isLeaf?' (automático ∑)':''}</label>
+      ${isLeaf
+        ? `<div class="ir"><input type="number" id="inp-caudal" value="${qVal}" placeholder="Ingresá caudal" min="0" step="0.01" onchange="saveCaudalLive(${id})"><div class="ut">m³/min</div></div>`
+        : `<div class="ir" style="opacity:.7"><input type="number" id="inp-caudal" value="${qVal}" placeholder="Se calcula con ⚡" class="auto-q" readonly style="cursor:not-allowed"><div class="ut">m³/min</div></div>
+           <div class="note warn">∑ Suma automática de ramales. Usá ⚡ CALCULAR TODO.</div>`
+      }
+    </div>
+    <div class="fg">
+      <label>Diámetro</label>
+      <div class="ir">
+        <input type="number" id="inp-diam" min="50" step="1"
+          value="${s.dOverride || calcRecommendedD(s)}"
+          onchange="saveDiameter(${id})"
+          style="${s.dOverride?'border-color:var(--accent);color:var(--accent)':''}">
+        <div class="ut">mm</div>
+      </div>
+      ${s.dOverride
+        ? `<div class="note warn">⚠ Diámetro editado manualmente.</div>`
+        : `<div class="note ok">✓ Recomendado para ${parseFloat(document.getElementById('gv')?.value||20)} m/s.</div>`}
+    </div>
+    <div class="fg">
+      <label>Largo del tramo</label>
+      <div class="ir"><input type="number" id="inp-largo" value="${s.largo!==null?s.largo:estLen}" placeholder="${estLen}" min="0.01" step="0.1" onchange="saveCaudalLive(${id})"><div class="ut">m</div></div>
+    </div>
+    <div class="fg">
+      <label>Curvas 90°</label>
+      <div class="ir"><input type="number" id="inp-curvas" value="${s.curvas||0}" min="0"><div class="ut">uds</div></div>
+    </div>
+    <div class="note ok">↗ El flujo siempre se propaga hacia el filtro/colector automáticamente.</div>
+    <button class="cbtn" onclick="calcOneSeg(${id})">⚡ CALCULAR ESTE TRAMO</button>
+  </div>
+  <div id="sr"></div>`;
+
+  if(s.result) renderResult(s.result,'sr');
+}
+
+
+
+// ================================================================
+// PANEL DERECHO — Nodo
+// ================================================================
+
+// El usuario elige qué tramos son entradas en un nodo union.
+// Máximo 2 entradas; el tercero queda automáticamente como salida.
+
+function setPassInlet(nodeId, segId){
+  const n = nodes.find(x => x.id === nodeId); if(!n) return;
+  if(!n.inlets) n.inlets = [];
+
+  // Toggle: clic en el mismo → deseleccionar; clic en otro → reemplazar
+  if(n.inlets[0] === segId){
+    n.inlets = [];
+    // Limpiar direcciones de ambos tramos
+    for(let cid of n.segIds){
+      const s = segs.find(x=>x.id===cid); if(!s) continue;
+      s.upstream = null; s.downstream = null; s._res = false; s.caudal = s.caudalAuto ? null : s.caudal;
+    }
+  } else {
+    // Limpiar el inlet anterior si existía
+    if(n.inlets.length === 1){
+      const oldOut = n.segIds.find(cid=>cid!==n.inlets[0]);
+      const so = segs.find(x=>x.id===oldOut);
+      if(so && so.caudalAuto){ so.caudal=null; so._res=false; so.upstream=null; so.downstream=null; }
+    }
+    n.inlets = [segId];
+    // Asignar dirección
+    const outletId = n.segIds.find(cid => cid !== segId);
+    const si = segs.find(x=>x.id===segId);
+    const so = segs.find(x=>x.id===outletId);
+    if(si){ si.downstream = n.id; si.upstream = si._nA===n.id ? si._nB : si._nA; }
+    if(so){ so.upstream   = n.id; so.downstream = so._nA===n.id ? so._nB : so._nA; }
+    propagateFrom(n.id);
+  }
+  showNode(nodeId);
+  render();
+}
+
+function setInlet(nodeId, segId, val){
+  const n = nodes.find(x => x.id === nodeId); if(!n) return;
+  if(!n.inlets) n.inlets = [];
+  if(val){
+    if(!n.inlets.includes(segId)) n.inlets.push(segId);
+    if(n.inlets.length > 2) n.inlets = n.inlets.slice(-2);
+  } else {
+    // Al deseleccionar, limpiar el outlet automático si existía
+    if(n.inlets.length === 2){
+      const outletId = n.segIds.find(cid=>!n.inlets.includes(cid));
+      const so = segs.find(x=>x.id===outletId);
+      if(so && so.caudalAuto){ so.caudal=null; so._res=false; so.upstream=null; so.downstream=null; }
+    }
+    n.inlets = n.inlets.filter(cid => cid !== segId);
+  }
+
+  // Si ya hay 2 entradas definidas, calcular el outlet inmediatamente
+  if(n.inlets.length === 2){
+    const outletId = n.segIds.find(cid => !n.inlets.includes(cid));
+    const os = segs.find(x => x.id === outletId);
+    if(os){
+      // Sumar los caudales de los inlets que ya tienen valor
+      const sum = n.inlets.reduce((acc, cid) => {
+        const s = segs.find(x => x.id === cid);
+        return acc + (s && s.caudal ? parseFloat(s.caudal) : 0);
+      }, 0);
+      if(sum > 0){
+        os.caudal     = sum;
+        os.caudalAuto = true;
+        os._res       = true;
+      }
+      // Asignar dirección
+      os.upstream   = n.id;
+      os.downstream = os._nA === n.id ? os._nB : os._nA;
+      // Dirección de los inlets hacia este nodo
+      for(let cid of n.inlets){
+        const s = segs.find(x => x.id === cid); if(!s) continue;
+        s.downstream = n.id;
+        s.upstream   = s._nA === n.id ? s._nB : s._nA;
+      }
+    }
+    // Propagar hacia arriba por si este outlet alimenta otro nodo union
+    propagateFrom(n.id);
+  }
+
+  showNode(nodeId);
+  render();
+}
+
+// Propagar en cascada: si un nodo union tiene 2 tramos con caudal
+// y 1 sin caudal, auto-asigna inlets y calcula el outlet.
+function propagateFrom(startNodeId){
+  let changed = true, guard = segs.length * 10;
+  while(changed && guard-- > 0){
+    changed = false;
+    for(let n of nodes){
+      if(!n.inlets) n.inlets = [];
+
+      // ── NODO DE PASO (grado 2) ─────────────────────────────
+      if(n.type === 'pass' && n.inlets.length === 1){
+        const inletId  = n.inlets[0];
+        const outletId = n.segIds.find(cid => cid !== inletId);
+        const si = segs.find(x=>x.id===inletId);
+        const so = segs.find(x=>x.id===outletId);
+        if(si && so && si.caudal && parseFloat(so.caudal) !== parseFloat(si.caudal)){
+          so.caudal     = parseFloat(si.caudal);
+          so.caudalAuto = true;
+          so._res       = true;
+          so.upstream   = n.id;
+          so.downstream = so._nA === n.id ? so._nB : so._nA;
+          si.downstream = n.id;
+          si.upstream   = si._nA === n.id ? si._nB : si._nA;
+          changed = true;
+        }
+        continue;
+      }
+
+      // ── NODO UNION (grado 3) ───────────────────────────────
+      if(n.type !== 'union') continue;
+
+      // Auto-detectar inlets si aún no están definidos
+      if(n.inlets.length < 2){
+        const withQ = n.segIds.filter(cid => { const s=segs.find(x=>x.id===cid); return s&&s._res; });
+        const noQ   = n.segIds.filter(cid => { const s=segs.find(x=>x.id===cid); return s&&!s._res; });
+        if(withQ.length === 2 && noQ.length === 1){
+          n.inlets = withQ;
+        }
+      }
+
+      if(n.inlets.length !== 2) continue;
+
+      const outletId = n.segIds.find(cid => !n.inlets.includes(cid));
+      const os = segs.find(x => x.id === outletId); if(!os) continue;
+      const sum = n.inlets.reduce((acc, cid) => {
+        const s = segs.find(x => x.id === cid);
+        return acc + (s && s.caudal ? parseFloat(s.caudal) : 0);
+      }, 0);
+      if(sum > 0 && parseFloat(os.caudal) !== sum){
+        os.caudal     = sum;
+        os.caudalAuto = true;
+        os._res       = true;
+        os.upstream   = n.id;
+        os.downstream = os._nA === n.id ? os._nB : os._nA;
+        for(let cid of n.inlets){
+          const s = segs.find(x=>x.id===cid); if(!s) continue;
+          s.downstream = n.id;
+          s.upstream   = s._nA === n.id ? s._nB : s._nA;
+        }
+        changed = true;
+      }
+    }
+  }
+  // Recalcular hidráulica de los tramos que ya tienen largo
+  for(let s of segs){
+    if(s.caudal && s.largo) s.result = hydraulics(parseFloat(s.caudal), parseFloat(s.largo), s.curvas||0, s.dOverride||null);
+  }
+  updateTotals();
+}
+
+function showNode(id){
+  const n=nodes.find(x=>x.id===id); if(!n) return;
+  const tmap={leaf:'BOCA / TERMINAL',union:'UNIÓN EN Y',pass:'NODO DE PASO',filter:'FILTRO DE MANGAS'};
+  const bmap={leaf:'bdg-g',union:'bdg-r',pass:'bdg-y',filter:'bdg-p'};
+  document.getElementById('rh').innerHTML=`NODO <span class="bdg ${bmap[n.type]||'bdg-b'}">${tmap[n.type]||n.type}</span>`;
+
+  if(n.type === 'union'){
+    // Para nodos union: el usuario elige cuáles 2 tramos son entradas
+    const outletId = n.inlets.length===2 ? n.segIds.find(cid=>!n.inlets.includes(cid)) : null;
+    let segRows = '';
+    for(let cid of n.segIds){
+      const s = segs.find(x=>x.id===cid);
+      const q = s&&s.caudal!==null ? parseFloat(s.caudal).toFixed(2) : '—';
+      const isInlet  = n.inlets.includes(cid);
+      const isOutlet = cid === outletId;
+      const btnIn  = `<button onclick="setInlet(${n.id},${cid},true)"  style="padding:2px 6px;font-size:10px;border-radius:3px;cursor:pointer;border:1px solid ${isInlet?'var(--green)':'var(--border)'};background:${isInlet?'var(--green)':'transparent'};color:${isInlet?'#000':'var(--muted)'};font-weight:700">↓ ENTRA</button>`;
+      const lblOut = `<span style="padding:2px 8px;font-size:10px;border-radius:3px;border:1px solid var(--blue);color:var(--blue);font-weight:700">↑ SALE</span>`;
+      const role   = isOutlet ? lblOut : btnIn;
+      segRows += `<tr>
+        <td style="color:var(--blue);font-family:'Share Tech Mono',monospace">S${cid}</td>
+        <td style="font-family:'Share Tech Mono',monospace;font-weight:700;color:${s&&s.caudal?'var(--text)':'#555e6a'}">${q}</td>
+        <td>${role}</td>
+      </tr>`;
+    }
+    const inletSum = n.inlets.length===2
+      ? n.inlets.reduce((a,cid)=>{ const s=segs.find(x=>x.id===cid); return a+(s&&s.caudal?parseFloat(s.caudal):0); },0)
+      : null;
+    const sumBlock = n.inlets.length===2
+      ? `<div style="margin-top:8px;padding:8px 10px;background:#0d1117;border:1px solid var(--accent);border-radius:4px;">
+           <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:2px">Caudal saliente (automático)</div>
+           <div style="font-size:20px;color:var(--accent);font-family:'Share Tech Mono',monospace;font-weight:700">∑ ${inletSum.toFixed(2)} <span style="font-size:11px;color:var(--muted)">m³/min</span></div>
+         </div>`
+      : `<div class="note warn" style="margin-top:6px">Marcá 2 tramos como ENTRA para definir la unión.</div>`;
+    document.getElementById('rc').innerHTML=`
+    <div class="pf">
+      <div style="font-size:11px;color:var(--muted);line-height:1.6">
+        <b style="color:var(--text)">Posición:</b> (${n.x}, ${n.y}) &nbsp;·&nbsp; 3 tramos
+      </div>
+      <div>
+        <div class="pt" style="margin-bottom:5px">CONFIGURAR UNIÓN EN Y</div>
+        <table class="nt">
+          <thead><tr><th>Tramo</th><th>Q (m³/min)</th><th>Rol</th></tr></thead>
+          <tbody>${segRows}</tbody>
+        </table>
+        ${sumBlock}
+      </div>
+    </div>`;
+  } else if(n.type === 'pass'){
+    if(!n.inlets) n.inlets = [];
+    const inletId  = n.inlets.length===1 ? n.inlets[0] : null;
+    const outletId = inletId !== null ? n.segIds.find(cid=>cid!==inletId) : null;
+    let segRows = '';
+    for(let cid of n.segIds){
+      const s  = segs.find(x=>x.id===cid);
+      const q  = s&&s.caudal!==null ? parseFloat(s.caudal).toFixed(2) : '—';
+      const isInlet  = cid === inletId;
+      const isOutlet = cid === outletId;
+      const isIn  = isInlet;
+      const bBg   = isIn ? 'var(--green)' : 'transparent';
+      const bBdr  = isIn ? 'var(--green)' : 'var(--border)';
+      const bClr  = isIn ? '#000' : 'var(--muted)';
+      const btnIn  = `<button onclick="setPassInlet(${n.id},${cid})" style="padding:2px 6px;font-size:10px;border-radius:3px;cursor:pointer;border:1px solid ${bBdr};background:${bBg};color:${bClr};font-weight:700">↓ ENTRA</button>`;
+      const lblOut = `<span style="padding:2px 8px;font-size:10px;border-radius:3px;border:1px solid var(--blue);color:var(--blue);font-weight:700">↑ SALE</span>`;
+      const qClr   = (s&&s.caudal) ? 'var(--text)' : '#555e6a';
+      segRows += `<tr><td style="color:var(--blue);font-family:'Share Tech Mono',monospace">S${cid}</td><td style="font-family:'Share Tech Mono',monospace;font-weight:700;color:${qClr}">${q}</td><td>${isOutlet ? lblOut : btnIn}</td></tr>`;
+    }
+    const note = inletId===null
+      ? '<div class="note warn" style="margin-top:6px">Marcá el tramo que ENTRA para definir la dirección.</div>'
+      : '';
+    document.getElementById('rc').innerHTML =
+      '<div class="pf">' +
+      '<div style="font-size:11px;color:var(--muted);line-height:1.6"><b style="color:var(--text)">Posición:</b> ('+n.x+', '+n.y+') &nbsp;·&nbsp; 2 tramos</div>' +
+      '<div><div class="pt" style="margin-bottom:5px">CONFIGURAR NODO DE PASO</div>' +
+      '<table class="nt"><thead><tr><th>Tramo</th><th>Q (m³/min)</th><th>Rol</th></tr></thead>' +
+      '<tbody>'+segRows+'</tbody></table>' + note + '</div></div>';
+  } else {
+    // leaf / filter: tabla simple informativa
+    let rows='', qIn=0;
+    for(let sid of n.segIds){
+      const s=segs.find(x=>x.id===sid); if(!s) continue;
+      const q=s.caudal; const qs=q!==null?parseFloat(q).toFixed(2):'—';
+      let dir='—', dc='#7d8590';
+      if(s.downstream===n.id){ dir='→ ENTRA'; dc='#3fb950'; if(q) qIn+=parseFloat(q); }
+      else if(s.upstream===n.id){ dir='← SALE'; dc='var(--blue)'; }
+      rows+=`<tr><td style="color:var(--blue);font-family:'Share Tech Mono',monospace">S${sid}</td><td style="font-weight:700;color:${q?'var(--text)':'#555e6a'};font-family:'Share Tech Mono',monospace">${qs}</td><td style="color:${dc}">${dir}</td></tr>`;
+    }
+    document.getElementById('rc').innerHTML =
+      '<div class="pf">' +
+      '<div style="font-size:11px;color:var(--muted);line-height:1.6"><b style="color:var(--text)">Posición:</b> ('+n.x+', '+n.y+')<br><b style="color:var(--text)">Grado:</b> '+n.segIds.length+' tramo'+(n.segIds.length!==1?'s':'')+'</div>' +
+      '<table class="nt"><thead><tr><th>Tramo</th><th>Q (m³/min)</th><th>Dir.</th></tr></thead>' +
+      '<tbody>'+(rows||'<tr><td colspan="3" style="color:var(--muted);padding:6px">Sin tramos</td></tr>')+'</tbody></table>' +
+      '</div>';
+  }
+}
+
+function showFilterProps(){
+  if(!filterUnit) return;
+  document.getElementById('rh').innerHTML=`FILTRO + VENTILADOR <span class="bdg bdg-p">EQUIPO</span>`;
+  const fn = nodes.find(n=>n.x===filterUnit.x&&n.y===filterUnit.y);
+  const totalQ = fn&&fn._qIn>0 ? fn._qIn.toFixed(2) : '—';
+
+  // Calcular hidráulica de los tramos internos si tienen datos
+  const calcBtn = (tramo) => `<button class="cbtn ob" style="margin-top:4px" onclick="calcFilterTramo('${tramo}')">⚡ Calcular</button>`;
+
+  const resFV   = filterUnit.resultFV;
+  const resDesc = filterUnit.resultDesc;
+
+  const resBlock = (r) => r ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px">
+      <div class="rc cy s2"><div class="rl">Diámetro adoptado</div><div class="rv">Ø ${r.diametro}<span class="ru">mm</span></div></div>
+      <div class="rc"><div class="rl">Vel. real</div><div class="rv">${r.v_real}<span class="ru">m/s</span></div></div>
+      <div class="rc cr"><div class="rl">ΔP total</div><div class="rv rr">${r.dpT}<span class="ru">mmca</span></div></div>
+    </div>` : '';
+
+  document.getElementById('rc').innerHTML=`
+  <div class="pf">
+
+    <div style="padding:8px 10px;background:#0d1117;border:1px solid var(--filter);border-radius:4px;text-align:center">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:2px">Caudal entrante al filtro</div>
+      <div style="font-size:20px;font-family:'Share Tech Mono',monospace;font-weight:700;color:var(--filter)">${totalQ} <span style="font-size:11px;color:var(--muted)">m³/min</span></div>
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:8px">
+      <div class="pt" style="margin-bottom:6px;color:var(--filter)">TRAMO FILTRO → VENTILADOR</div>
+      <div class="fg">
+        <label>Largo</label>
+        <div class="ir"><input type="number" id="fv-largo" value="${filterUnit.largoFV||''}" placeholder="m" min="0.1" step="0.1" onchange="saveFilterTramo('FV')"><div class="ut">m</div></div>
+      </div>
+      <div class="fg" style="margin-top:6px">
+        <label>Curvas 90°</label>
+        <div class="ir"><input type="number" id="fv-curvas" value="${filterUnit.curvasFV||0}" min="0" onchange="saveFilterTramo('FV')"><div class="ut">uds</div></div>
+      </div>
+      ${resBlock(resFV)}
+      ${calcBtn('FV')}
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:8px">
+      <div class="pt" style="margin-bottom:6px;color:var(--filter)">TRAMO DE DESCARGA</div>
+      <div class="fg">
+        <label>Largo</label>
+        <div class="ir"><input type="number" id="desc-largo" value="${filterUnit.largoDesc||''}" placeholder="m" min="0.1" step="0.1" onchange="saveFilterTramo('DESC')"><div class="ut">m</div></div>
+      </div>
+      <div class="fg" style="margin-top:6px">
+        <label>Curvas 90°</label>
+        <div class="ir"><input type="number" id="desc-curvas" value="${filterUnit.curvasDesc||0}" min="0" onchange="saveFilterTramo('DESC')"><div class="ut">uds</div></div>
+      </div>
+      ${resBlock(resDesc)}
+      ${calcBtn('DESC')}
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:8px">
+      <div class="pt" style="margin-bottom:6px;color:#58a6ff">VENTILADOR RECOMENDADO</div>
+      ${buildFanBlock()}
+    </div>
+
+    <button class="cbtn or" style="margin-top:4px" onclick="filterUnit=null;selFilter=false;rebuildNodes();showEmpty();render()">✕ ELIMINAR EQUIPO</button>
+  </div>`;
+}
+
+function buildFanBlock(){
+  const crit = calcCriticalPath();
+  const fn   = filterUnit ? nodes.find(n=>n.x===filterUnit.x&&n.y===filterUnit.y) : null;
+  const q    = fn&&fn._qIn>0 ? fn._qIn.toFixed(2) : null;
+  const dp   = crit.dp>0 ? crit.dp.toFixed(2) : null;
+  if(!q && !dp) return '<div class="note warn">Calculá la red primero para ver los datos del ventilador.</div>';
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div style="padding:10px;background:#0d1117;border:1px solid #58a6ff;border-radius:6px;text-align:center">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:4px">Caudal</div>
+        <div style="font-size:20px;font-family:'Share Tech Mono',monospace;font-weight:700;color:#58a6ff">${q||'—'}</div>
+        <div style="font-size:10px;color:var(--muted)">m³/min</div>
+      </div>
+      <div style="padding:10px;background:#0d1117;border:1px solid var(--red);border-radius:6px;text-align:center">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:4px">Presión total</div>
+        <div style="font-size:20px;font-family:'Share Tech Mono',monospace;font-weight:700;color:var(--red)">${dp||'—'}</div>
+        <div style="font-size:10px;color:var(--muted)">mmca</div>
+      </div>
+    </div>`;
+}
+
+function saveFilterTramo(tramo){
+  if(!filterUnit) return;
+  if(tramo==='FV'){
+    const l=parseFloat(document.getElementById('fv-largo')?.value);
+    const c=parseInt(document.getElementById('fv-curvas')?.value)||0;
+    if(!isNaN(l)&&l>0) filterUnit.largoFV=l;
+    filterUnit.curvasFV=c;
+  } else {
+    const l=parseFloat(document.getElementById('desc-largo')?.value);
+    const c=parseInt(document.getElementById('desc-curvas')?.value)||0;
+    if(!isNaN(l)&&l>0) filterUnit.largoDesc=l;
+    filterUnit.curvasDesc=c;
+  }
+  render();
+}
+
+function calcFilterTramo(tramo){
+  if(!filterUnit) return;
+  saveFilterTramo(tramo);
+  const fn = nodes.find(n=>n.x===filterUnit.x&&n.y===filterUnit.y);
+  const q  = fn&&fn._qIn>0 ? fn._qIn : null;
+  if(!q){ alert('Calculá la red primero para conocer el caudal.'); return; }
+  if(tramo==='FV'){
+    if(!filterUnit.largoFV){ alert('Ingresá el largo del tramo filtro→ventilador.'); return; }
+    filterUnit.resultFV = hydraulics(q, filterUnit.largoFV, filterUnit.curvasFV||0);
+  } else {
+    if(!filterUnit.largoDesc){ alert('Ingresá el largo del tramo de descarga.'); return; }
+    filterUnit.resultDesc = hydraulics(q, filterUnit.largoDesc, filterUnit.curvasDesc||0);
+  }
+  showFilterProps();
+  // Sumar ΔP al ramal crítico
+  updateTotals();
+}
+
+function showEmpty(){
+  document.getElementById('rh').innerHTML='PROPIEDADES';
+  document.getElementById('rc').innerHTML=`<div class="emp"><div style="font-size:28px;margin-bottom:8px">📐</div>Cambiá a <b style="color:var(--text)">SELEC.</b> y hacé clic en un tramo o nodo.</div>`;
+}
+
+// ================================================================
+// CÁLCULO HIDRÁULICO
+// caudal en m³/min → convertir a m³/s para cálculo
+// ================================================================
+const THICK_ENGR=[{dMax:300,t:0.7},{dMax:600,t:0.9},{dMax:900,t:1.25},{dMax:99999,t:1.6}];
+const THICK_SOLD=[{dMax:600,t:1.6},{dMax:900,t:2.0},{dMax:99999,t:3.2}];
+const getT=d=>{ const tbl=jointType==='soldado'?THICK_SOLD:THICK_ENGR; return tbl.find(r=>d<=r.dMax)||tbl[tbl.length-1]; };
+
+function hydraulics(q_min, l, nc, dOverride){
+  // q_min en m³/min → Q en m³/s
+  // dOverride: diámetro comercial en mm elegido por el usuario (opcional)
+  const v   = parseFloat(document.getElementById('gv').value)||20;
+  const rho = parseFloat(document.getElementById('gr').value)||1.2;
+  const prc = parseFloat(document.getElementById('gp').value)||2.5;
+  const phh = parseFloat(document.getElementById('ghh').value)||15;
+  const Q   = q_min / 60;        // m³/s
+  const A   = Q / v;
+  const dc  = Math.sqrt(4*A/Math.PI)*1000;  // mm calculado para velocidad diseño
+  const dm  = dOverride ? dOverride : Math.round(dc/10)*10;  // redondear a múltiplo de 10 más cercano
+  const d_m = dm / 1000;
+  const Ar  = Math.PI*d_m*d_m/4;
+  const vr  = Q / Ar;
+  const f   = 0.02;
+  const dpF = f*(l/d_m)*(rho*vr*vr/2);
+  const dpC = nc*0.3*(rho*vr*vr/2);
+  const dpT = dpF+dpC;
+  const th  = getT(dm);
+
+  // ── Chapa tramo recto ───────────────────────────────────────
+  const ach  = Math.PI*d_m*l;
+
+  // ── Chapa de curvas ──────────────────────────────────────────
+  // Radio medio = 1.5D, ángulo 90° → arco medio = π/2 × 1.5D
+  const arcLen   = (Math.PI/2) * 1.5 * d_m;     // m de arco por curva
+  const achCurvas = nc * arcLen * Math.PI * d_m; // área total curvas (m²)
+
+  // Peso chapa total (recto + curvas) con 20% desperdicio
+  const pesoChapaTot = (ach + achCurvas) * (th.t/1000) * 7850 * 1.20;
+
+  // ── Bridas ───────────────────────────────────────────────────
+  const perim = Math.PI*d_m;
+  let flangeKgM = 0;
+  if(jointType === 'engrafado'){
+    if(dm<=300)      flangeKgM = 25.4  * 4.763 * 1e-6 * 7850;
+    else if(dm<=500) flangeKgM = 31.75 * 4.763 * 1e-6 * 7850;
+    else             flangeKgM = 38.1  * 6.35  * 1e-6 * 7850;
+  } else {
+    if(dm<=300)      flangeKgM = 32 * 6.4 * 1e-6 * 7850;
+    else if(dm<=600) flangeKgM = 38 * 6.4 * 1e-6 * 7850;
+    else if(dm<=900) flangeKgM = 51 * 6.4 * 1e-6 * 7850;
+    else             flangeKgM = 51 * 8.0 * 1e-6 * 7850;
+  }
+  const nBridasLargo  = Math.ceil(l / 2.4) + 1;
+  const nBridasCurvas = nc * 2;
+  const nBridas  = nBridasLargo + nBridasCurvas;
+  const pesoBridas = perim * flangeKgM * nBridas;
+
+  // ── Tiempo de fabricación ─────────────────────────────────────
+  let mh = 0;
+  if(jointType==='soldado'){
+    if(dm<=300)      mh=1.5;
+    else if(dm<=600) mh=1.25;
+    else if(dm<=900) mh=1.0;
+    else             mh=0.75;
+  } else {
+    if(dm<=300)      mh=2.5;
+    else if(dm<=600) mh=2.0;
+    else if(dm<=900) mh=1.5;
+    else             mh=1.25;
+  }
+  const hFab     = l / mh;                    // horas tramo recto
+  const hFabCurv = (arcLen * 4 * nc) / mh;   // arco × 4 por cada curva
+  const hPintura = jointType==='soldado' ? (ach + achCurvas) / 20 : 0;
+  const hTotal   = hFab + hFabCurv + hPintura;
+
+  const toMmca = 0.10197;
+  const pesoTotal = pesoChapaTot + pesoBridas;
+  const costoMat  = pesoTotal * prc;
+  const costoMO   = hTotal * phh;
+  const costoTotal= costoMat + costoMO;
+  return {
+    diametro:Math.round(dm), d_calc:dc.toFixed(0), espesor:th.t,
+    v_real:vr.toFixed(2),
+    dpF:(dpF*toMmca).toFixed(2), dpC:(dpC*toMmca).toFixed(2), dpT:(dpT*toMmca).toFixed(2),
+    area_ch:(ach+achCurvas).toFixed(2),
+    pesoChapa:pesoChapaTot.toFixed(1), pesoBridas:pesoBridas.toFixed(1),
+    peso:pesoTotal.toFixed(1),
+    costoMat:costoMat.toFixed(2), costoMO:costoMO.toFixed(2), costo:costoTotal.toFixed(2),
+    hFab:hFab.toFixed(2), hFabCurv:hFabCurv.toFixed(2),
+    hPintura:hPintura.toFixed(2), hTotal:hTotal.toFixed(2)
+  };
+}
+
+
+
+function setJointType(type){
+  jointType = type;
+  document.getElementById('btn-engr').classList.toggle('active', type==='engrafado');
+  document.getElementById('btn-sold').classList.toggle('active', type==='soldado');
+  // Recalcular todos los tramos que ya tienen resultado
+  for(let s of segs){
+    if(s.caudal&&s.largo) s.result=hydraulics(parseFloat(s.caudal),parseFloat(s.largo),s.curvas||0,s.dOverride||null);
+  }
+  if(filterUnit){
+    const fn=nodes.find(n=>n.x===filterUnit.x&&n.y===filterUnit.y);
+    const q=fn&&fn._qIn>0?fn._qIn:null;
+    if(q&&filterUnit.largoFV)   filterUnit.resultFV  =hydraulics(q,filterUnit.largoFV,  filterUnit.curvasFV||0);
+    if(q&&filterUnit.largoDesc) filterUnit.resultDesc=hydraulics(q,filterUnit.largoDesc,filterUnit.curvasDesc||0);
+  }
+  updateTotals(); render();
+  if(selSeg!==null)  showSeg(selSeg);
+  if(selFilter)      showFilterProps();
+}
+
+// Calcular diámetro recomendado para la velocidad de diseño (sin redondear a comercial)
+function calcRecommendedD(s){
+  if(!s.caudal) return '';
+  const v = parseFloat(document.getElementById('gv')?.value)||20;
+  const Q = parseFloat(s.caudal)/60;
+  const A = Q/v;
+  return Math.round(Math.sqrt(4*A/Math.PI)*1000 / 10) * 10;
+}
+
+function saveDiameter(id){
+  const s=segs.find(x=>x.id===id); if(!s) return;
+  const inp=document.getElementById('inp-diam'); if(!inp) return;
+  const chosen = parseInt(inp.value);
+  if(isNaN(chosen)||chosen<50) return;
+  const recommended = calcRecommendedD(s);
+  // Si el usuario ingresó el mismo que el recomendado → sin override
+  s.dOverride = (chosen===recommended) ? null : chosen;
+  if(s.caudal && s.largo){
+    s.result = hydraulics(parseFloat(s.caudal), parseFloat(s.largo), s.curvas||0, s.dOverride||null);
+    updateTotals(); render();
+  }
+  showSeg(id);
+}
+
+// Guardar caudal/largo al instante cuando el usuario cambia un campo
+// (así calcAll no depende de que el usuario presione "calcular este tramo")
+function saveCaudalLive(id){
+  const s=segs.find(x=>x.id===id); if(!s) return;
+  const nA_=nodes.find(n=>n.id===s._nA), nB_=nodes.find(n=>n.id===s._nB);
+  const isBoca=(nA_?.type==='leaf')||(nB_?.type==='leaf');
+  const inpQ=document.getElementById('inp-caudal');
+  const inpL=document.getElementById('inp-largo');
+  const inpC=document.getElementById('inp-curvas');
+  // Solo guardar caudal si es boca — los internos siempre son automáticos
+  if(isBoca && inpQ){ const v=parseFloat(inpQ.value); if(!isNaN(v)&&v>0){ s.caudal=v; s.caudalAuto=false; } }
+  if(inpL){ const v=parseFloat(inpL.value); if(!isNaN(v)&&v>0) s.largo=v; }
+  if(inpC){ const v=parseInt(inpC.value);   if(!isNaN(v))      s.curvas=v; }
+}
+
+function calcOneSeg(id){
+  const s=segs.find(x=>x.id===id); if(!s) return;
+  const inpQ=document.getElementById('inp-caudal');
+  const inpL=document.getElementById('inp-largo');
+  const inpC=document.getElementById('inp-curvas');
+  if(!inpQ||!inpL||!inpC){ alert('Seleccioná el tramo de nuevo.'); return; }
+  const qRaw=parseFloat(inpQ.value);
+  const lRaw=parseFloat(inpL.value);
+  const cRaw=parseInt(inpC.value)||0;
+  // Caudal: usar el del campo si es válido, si no el que ya tiene el tramo
+  const q=(!isNaN(qRaw)&&qRaw>0)?qRaw:(s.caudal&&s.caudal>0?parseFloat(s.caudal):NaN);
+  const l=(!isNaN(lRaw)&&lRaw>0)?lRaw:NaN;
+  if(isNaN(q)||q<=0){ alert('Ingresá el caudal del tramo (m³/min).'); return; }
+  if(isNaN(l)||l<=0){ alert('Ingresá el largo del tramo (m).'); return; }
+  s.caudal=q; s.largo=l; s.curvas=cRaw;
+  s.result=hydraulics(q,l,cRaw,s.dOverride||null);
+  renderResult(s.result,'sr');
+  updateTotals(); render();
+}
+
+function renderResult(r, divId){
+  const el=document.getElementById(divId); if(!el) return;
+  el.innerHTML=`
+  <div class="rs">
+    <div class="pt" style="margin-bottom:7px">RESULTADOS</div>
+    <div class="rg">
+      <div class="rc cy s2"><div class="rl">Diámetro adoptado</div><div class="rv big">Ø ${r.diametro}<span class="ru">mm</span></div></div>
+      <div class="rc"><div class="rl">Vel. real</div><div class="rv">${r.v_real}<span class="ru">m/s</span></div></div>
+      <div class="rc"><div class="rl">Espesor (${jointType})</div><div class="rv">${r.espesor}<span class="ru">mm</span></div></div>
+      <div class="rc"><div class="rl">ΔP fricción</div><div class="rv">${r.dpF}<span class="ru">mmca</span></div></div>
+      <div class="rc"><div class="rl">ΔP curvas</div><div class="rv">${r.dpC}<span class="ru">mmca</span></div></div>
+      <div class="rc cr s2"><div class="rl">ΔP TOTAL TRAMO</div><div class="rv big rr">${r.dpT}<span class="ru">mmca</span></div></div>
+      <div class="rc cg"><div class="rl">Chapa (+20%)</div><div class="rv rg">${r.pesoChapa}<span class="ru">kg</span></div></div>
+      <div class="rc cg"><div class="rl">Bridas</div><div class="rv rg">${r.pesoBridas}<span class="ru">kg</span></div></div>
+      <div class="rc cg s2"><div class="rl">Peso total</div><div class="rv rg big">${r.peso}<span class="ru">kg</span></div></div>
+      <div class="rc cg"><div class="rl">Costo material</div><div class="rv rg">$${r.costoMat}</div></div>
+      <div class="rc cg"><div class="rl">Costo mano obra</div><div class="rv rg">$${r.costoMO}</div></div>
+      <div class="rc cg s2"><div class="rl">Costo total tramo</div><div class="rv rg big">$${r.costo}</div></div>
+      <div class="rc cb"><div class="rl">H. tramo recto</div><div class="rv">${r.hFab}<span class="ru">h</span></div></div>
+      ${parseFloat(r.hFabCurv)>0?`<div class="rc cb"><div class="rl">H. curvas</div><div class="rv">${r.hFabCurv}<span class="ru">h</span></div></div>`:''}
+      ${parseFloat(r.hPintura)>0?`<div class="rc cb"><div class="rl">H. pintura</div><div class="rv">${r.hPintura}<span class="ru">h</span></div></div>`:''}
+      <div class="rc cb s2"><div class="rl">Horas totales</div><div class="rv big">${r.hTotal}<span class="ru">h</span></div></div>
+    </div>
+  </div>`;
+}
+
+// ================================================================
+// PROPAGACIÓN DE CAUDALES
+// Regla única: el flujo siempre va hacia el filtro/colector.
+// En cada nodo, el tramo SIN caudal = suma de los tramos CON caudal.
+// Sin direcciones, sin upstream/downstream, sin BFS.
+// ================================================================
+function propagate(){
+  // Reset auto-calculados
+  for(let s of segs){
+    if(s.caudalAuto){ s.caudal=null; s.caudalAuto=false; }
+    s._res = (s.caudal !== null && parseFloat(s.caudal) > 0);
+  }
+
+  // Iterar hasta convergencia
+  let changed = true;
+  let guard   = segs.length * segs.length + 20;
+
+  while(changed && guard-- > 0){
+    changed = false;
+    for(let n of nodes){
+      if(n.type === 'leaf') continue;
+
+      // Si el nodo union tiene inlets definidos, usar solo esos como entradas
+      let withQ, noQ;
+      if(n.type === 'union' && n.inlets && n.inlets.length === 2){
+        withQ = n.inlets.filter(cid => { const s=segs.find(x=>x.id===cid); return s&&s._res; });
+        noQ   = [n.segIds.find(cid => !n.inlets.includes(cid))].filter(Boolean);
+        if(withQ.length !== 2) continue; // esperar a que ambas entradas tengan caudal
+      } else {
+        withQ = n.segIds.filter(cid => { const s=segs.find(x=>x.id===cid); return s&&s._res; });
+        noQ   = n.segIds.filter(cid => { const s=segs.find(x=>x.id===cid); return s&&!s._res; });
+        if(noQ.length !== 1) continue;
+      }
+
+      const sum = withQ.reduce((acc, cid) => {
+        const s = segs.find(x => x.id === cid);
+        return acc + (s && s.caudal ? parseFloat(s.caudal) : 0);
+      }, 0);
+
+      if(sum <= 0) continue;
+
+      const os = segs.find(x => x.id === noQ[0]);
+      if(!os) continue;
+
+      os.caudal     = sum;
+      os.caudalAuto = true;
+      os._res       = true;
+      changed       = true;
+    }
+  }
+
+  // ── Asignar upstream/downstream según inlets definidos por el usuario ──
+  for(let s of segs){ s.upstream = null; s.downstream = null; }
+
+  for(let n of nodes){
+    if(n.type === 'union' && n.inlets.length === 2){
+      // El usuario definió 2 entradas → el tercero es la salida
+      const outletId = n.segIds.find(cid => !n.inlets.includes(cid));
+      for(let cid of n.segIds){
+        const s = segs.find(x => x.id === cid); if(!s) continue;
+        if(n.inlets.includes(cid)){
+          s.downstream = n.id;
+          s.upstream   = s._nA === n.id ? s._nB : s._nA;
+        } else {
+          s.upstream   = n.id;
+          s.downstream = s._nA === n.id ? s._nB : s._nA;
+        }
+      }
+    }
+  }
+
+  // Tramos de boca: siempre salen desde el leaf
+  for(let s of segs){
+    const nA = nodes.find(n => n.id === s._nA);
+    const nB = nodes.find(n => n.id === s._nB);
+    if(nA?.type === 'leaf'){ s.upstream = s._nA; s.downstream = s._nB; }
+    else if(nB?.type === 'leaf'){ s.upstream = s._nB; s.downstream = s._nA; }
+  }
+
+  // ── Actualizar _qIn/_qOut en cada nodo ───────────────────────
+  for(let n of nodes){
+    n._qIn = 0; n._qOut = 0;
+    for(let sid of n.segIds){
+      const s = segs.find(x => x.id === sid);
+      if(!s || !s.caudal) continue;
+      if(s.downstream === n.id) n._qIn  += parseFloat(s.caudal);
+      if(s.upstream   === n.id) n._qOut += parseFloat(s.caudal);
+    }
+  }
+}
+
+
+function calcAll(){
+  if(segs.length===0){ alert('Dibujá la red primero.'); return; }
+
+  // Leer input activo del DOM por si el usuario editó sin guardar
+  if(selSeg!==null){
+    const s=segs.find(x=>x.id===selSeg);
+    if(s){
+      const inpQ=document.getElementById('inp-caudal');
+      const inpL=document.getElementById('inp-largo');
+      const inpC=document.getElementById('inp-curvas');
+      if(inpQ){ const v=parseFloat(inpQ.value); if(!isNaN(v)&&v>0) s.caudal=v; }
+      if(inpL){ const v=parseFloat(inpL.value); if(!isNaN(v)&&v>0) s.largo=v; }
+      if(inpC){ const v=parseInt(inpC.value);   if(!isNaN(v))      s.curvas=v; }
+    }
+  }
+
+  // Reconstruir nodos frescos
+  rebuildNodes();
+
+  // Verificar bocas (extremo libre = nodo leaf)
+  const bocas=segs.filter(s=>{
+    const nA=nodes.find(n=>n.id===s._nA), nB=nodes.find(n=>n.id===s._nB);
+    return nA?.type==='leaf'||nB?.type==='leaf';
+  });
+  const missQ=bocas.filter(s=>!s.caudal||parseFloat(s.caudal)<=0);
+  if(missQ.length>0){
+    alert(`⚠ Las bocas necesitan un caudal.\nFaltan en: ${missQ.map(s=>`S${s.id}`).join(', ')}\n\nUsá SELEC. → clic en el tramo → ingresá el caudal.`);
+    return;
+  }
+  const missL=segs.filter(s=>!s.largo||parseFloat(s.largo)<=0);
+  if(missL.length>0){
+    alert(`⚠ Todos los tramos necesitan largo.\nFaltan en: ${missL.map(s=>`S${s.id}`).join(', ')}`);
+    return;
+  }
+
+  propagate();
+
+  let cnt=0, noQ=[];
+  for(let s of segs){
+    if(!s.caudal||s.caudal<=0){ noQ.push(`S${s.id}`); continue; }
+    s.result=hydraulics(parseFloat(s.caudal), parseFloat(s.largo), s.curvas||0, s.dOverride||null);
+    cnt++;
+  }
+
+  updateTotals(); render();
+  if(selSeg!==null)   showSeg(selSeg);
+  if(selNode!==null)  showNode(selNode);
+  if(selFilter)       showFilterProps();
+
+  const maxQ=Math.max(0,...segs.filter(s=>s.caudal).map(s=>parseFloat(s.caudal)));
+  let msg=`✅ ${cnt} tramo${cnt!==1?'s':''} calculado${cnt!==1?'s':''}.\nCaudal total en colector/filtro: ${maxQ.toFixed(2)} m³/min`;
+  if(noQ.length>0) msg+=`\n\n⚠ Sin caudal propagado: ${noQ.join(', ')}\nVerificá conectividad y sentido del flujo.`;
+  alert(msg);
+}
+
+
+// ================================================================
+// RAMAL CRÍTICO — camino con mayor ΔP acumulado hasta el filtro
+// Recorre desde cada boca (leaf) siguiendo el tramo saliente
+// hasta llegar al filtro o a un nodo sin salida definida.
+// Devuelve {dp, path:[segIds], bocaId}
+// ================================================================
+function calcCriticalPath(){
+  const leafNodes = nodes.filter(n => n.type === 'leaf');
+  let best = { dp: 0, path: [], bocaId: null };
+
+  for(let leaf of leafNodes){
+    // Encontrar el tramo que sale de esta boca
+    let path = [];
+    let dpSum = 0;
+    let currentNodeId = leaf.id;
+    let visited = new Set();
+
+    while(true){
+      if(visited.has(currentNodeId)) break; // ciclo, salir
+      visited.add(currentNodeId);
+
+      // Buscar el tramo que sale desde currentNodeId
+      // = tramo cuyo upstream === currentNodeId
+      const outSeg = segs.find(s =>
+        s.upstream === currentNodeId &&
+        (s._nA === currentNodeId || s._nB === currentNodeId)
+      );
+      if(!outSeg) break; // sin salida → fin del recorrido
+
+      path.push(outSeg.id);
+      if(outSeg.result) dpSum += parseFloat(outSeg.result.dpT);
+
+      // Avanzar al nodo siguiente (downstream del tramo)
+      currentNodeId = outSeg.downstream;
+      if(currentNodeId === null || currentNodeId === undefined) break;
+
+      const nextNode = nodes.find(n => n.id === currentNodeId);
+      if(!nextNode) break;
+      if(nextNode.type === 'filter') break; // llegamos al filtro
+    }
+
+    if(dpSum > best.dp){
+      best = { dp: dpSum, path, bocaId: leaf.id };
+    }
+  }
+
+  // Sumar ΔP filtro sucio (ya en mmca)
+  const dpFiltro = parseFloat(document.getElementById('gdpf')?.value)||150;
+  if(best.dp > 0) best.dp += dpFiltro;
+
+  // Sumar ΔP tramos internos del equipo (FV + descarga, ya en mmca)
+  if(filterUnit){
+    if(filterUnit.resultFV)   best.dp += parseFloat(filterUnit.resultFV.dpT);
+    if(filterUnit.resultDesc) best.dp += parseFloat(filterUnit.resultDesc.dpT);
+  }
+
+  return best;
+}
+
+function updateTotals(){
+  const c=segs.filter(s=>s.result);
+  const tL=c.reduce((a,s)=>a+parseFloat(s.largo||0),0);
+  const tP=c.reduce((a,s)=>a+parseFloat(s.result.peso),0);
+  const tC=c.reduce((a,s)=>a+parseFloat(s.result.costo),0);
+  const mQ=segs.filter(s=>s.caudal).length>0?Math.max(...segs.filter(s=>s.caudal).map(s=>parseFloat(s.caudal))):0;
+  const prc = parseFloat(document.getElementById('gp')?.value)||2.5;
+
+  // Bridas extra por empalmes (nodos union): 3 bridas por la pieza de unión Y
+  // Usar el peso lineal de la planchuela correspondiente al diámetro mayor del nodo
+  const unionNodes = nodes.filter(n=>n.type==='union');
+  let pesoEmpalmes = 0;
+  for(let n of unionNodes){
+    // Tomar el diámetro mayor de los tramos conectados al nodo
+    const dMax = Math.max(...n.segIds.map(cid=>{
+      const s=segs.find(x=>x.id===cid);
+      return s&&s.result ? s.result.diametro : (s&&s.dOverride ? s.dOverride : 0);
+    }));
+    if(dMax<=0) continue;
+    const perim = Math.PI*(dMax/1000);
+    let flangeKgM = 0;
+    if(jointType==='engrafado'){
+      if(dMax<=300)      flangeKgM = 25.4  * 4.763 * 1e-6 * 7850;
+      else if(dMax<=500) flangeKgM = 31.75 * 4.763 * 1e-6 * 7850;
+      else               flangeKgM = 38.1  * 6.35  * 1e-6 * 7850;
+    } else {
+      if(dMax<=300)      flangeKgM = 32 * 6.4 * 1e-6 * 7850;
+      else if(dMax<=600) flangeKgM = 38 * 6.4 * 1e-6 * 7850;
+      else if(dMax<=900) flangeKgM = 51 * 6.4 * 1e-6 * 7850;
+      else               flangeKgM = 51 * 8.0 * 1e-6 * 7850;
+    }
+    pesoEmpalmes += perim * flangeKgM * 3; // 3 bridas por empalme
+  }
+  // Sumar tramos internos del equipo (filtro→ventilador y descarga)
+  const equipoResults = [];
+  if(filterUnit){
+    if(filterUnit.resultFV)   equipoResults.push(filterUnit.resultFV);
+    if(filterUnit.resultDesc) equipoResults.push(filterUnit.resultDesc);
+  }
+
+  // Peso bridas tramos + empalmes + tramos equipo
+  const tPBridas = c.reduce((a,s)=>a+parseFloat(s.result.pesoBridas),0)
+                 + equipoResults.reduce((a,r)=>a+parseFloat(r.pesoBridas),0)
+                 + pesoEmpalmes;
+  // Peso chapa (con 20% desperdicio) de tramos + equipo
+  const tPChapa  = c.reduce((a,s)=>a+parseFloat(s.result.pesoChapa),0)
+                 + equipoResults.reduce((a,r)=>a+parseFloat(r.pesoChapa),0);
+  const tPTotal  = tPChapa + tPBridas;
+  const tCMat    = c.reduce((a,s)=>a+parseFloat(s.result.costoMat),0)
+                 + equipoResults.reduce((a,r)=>a+parseFloat(r.costoMat),0);
+  const tCMO     = c.reduce((a,s)=>a+parseFloat(s.result.costoMO),0)
+                 + equipoResults.reduce((a,r)=>a+parseFloat(r.costoMO),0);
+  const tCTotal  = tCMat + tCMO;
+
+  // Horas: tramos + equipo
+  const tH = c.reduce((a,s)=>a+parseFloat(s.result.hTotal),0)
+           + equipoResults.reduce((a,r)=>a+parseFloat(r.hTotal),0);
+
+  // Longitud total incluyendo equipo
+  const tLEquipo = (filterUnit&&filterUnit.largoFV   ? parseFloat(filterUnit.largoFV)   : 0)
+                 + (filterUnit&&filterUnit.largoDesc  ? parseFloat(filterUnit.largoDesc)  : 0);
+
+  // Ramal crítico: camino con mayor ΔP acumulado hasta el filtro
+  const crit = calcCriticalPath();
+
+  document.getElementById('bt').textContent=c.length;
+  document.getElementById('blen').textContent=(tL+tLEquipo).toFixed(1)+' m';
+  document.getElementById('bpeso').textContent=tPChapa.toFixed(1)+' kg';
+  document.getElementById('bpbri').textContent=tPBridas.toFixed(1)+' kg';
+  document.getElementById('bcmat').textContent='$'+tCMat.toFixed(2);
+  document.getElementById('bcmo').textContent='$'+tCMO.toFixed(2);
+  document.getElementById('bcosto').textContent='$'+tCTotal.toFixed(2);
+  document.getElementById('bhoras').textContent=tH.toFixed(1)+' h';
+  document.getElementById('bq').textContent=mQ.toFixed(2)+' m³/min';
+  document.getElementById('bdp').textContent=crit.dp>0 ? crit.dp.toFixed(2)+' mmca' : '— mmca';
+
+  // Resaltar el ramal crítico en el canvas
+  criticalPath = crit.path;
+  render();
+}
+
+function delSeg(id){
+  segs=segs.filter(s=>s.id!==id);
+  if(selSeg===id) selSeg=null;
+  rebuildNodes(); showEmpty(); updateTotals(); render();
+}
+
+function saveProject(){
+  const data = {
+    version: 1,
+    jointType,
+    params: {
+      gv:  document.getElementById('gv')?.value,
+      gr:  document.getElementById('gr')?.value,
+      gp:  document.getElementById('gp')?.value,
+      ghh: document.getElementById('ghh')?.value,
+      gdpf:document.getElementById('gdpf')?.value,
+    },
+    segs: segs.map(s=>({
+      id:s.id, pts:s.pts, caudal:s.caudal, largo:s.largo, curvas:s.curvas,
+      dOverride:s.dOverride, caudalAuto:s.caudalAuto,
+      upstream:s.upstream, downstream:s.downstream,
+      _nA:s._nA, _nB:s._nB, _res:s._res
+    })),
+    nodes: nodes.map(n=>({
+      id:n.id, x:n.x, y:n.y, segIds:n.segIds, type:n.type, inlets:n.inlets||[]
+    })),
+    filterUnit: filterUnit ? {...filterUnit, resultFV:null, resultDesc:null} : null,
+    segCtr, nodeCtr
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'proyecto-ductos.ductcalc';
+  a.click();
+}
+
+function loadProject(event){
+  const file = event.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.version) throw new Error('Formato inválido');
+
+      // Restaurar parámetros globales
+      if(data.params){
+        if(data.params.gv)   document.getElementById('gv').value   = data.params.gv;
+        if(data.params.gr)   document.getElementById('gr').value   = data.params.gr;
+        if(data.params.gp)   document.getElementById('gp').value   = data.params.gp;
+        if(data.params.ghh)  document.getElementById('ghh').value  = data.params.ghh;
+        if(data.params.gdpf) document.getElementById('gdpf').value = data.params.gdpf;
+      }
+
+      // Restaurar tipo de conducto
+      if(data.jointType) setJointType(data.jointType);
+
+      // Restaurar contadores
+      segCtr  = data.segCtr  || 0;
+      nodeCtr = data.nodeCtr || 0;
+
+      // Restaurar tramos
+      segs = (data.segs||[]).map(s=>({
+        ...s, result:null
+      }));
+
+      // Restaurar nodos
+      nodes = (data.nodes||[]).map(n=>({
+        ...n, _qIn:0, _qOut:0, inlets:n.inlets||[]
+      }));
+
+      // Restaurar filtro
+      filterUnit = data.filterUnit || null;
+
+      // Recalcular hidráulica de todos los tramos con datos completos
+      for(let s of segs){
+        if(s.caudal && s.largo)
+          s.result = hydraulics(parseFloat(s.caudal), parseFloat(s.largo), s.curvas||0, s.dOverride||null);
+      }
+      if(filterUnit){
+        const fn = nodes.find(n=>n.x===filterUnit.x&&n.y===filterUnit.y);
+        const q  = fn&&fn._qIn>0 ? fn._qIn : null;
+        if(q&&filterUnit.largoFV)   filterUnit.resultFV  =hydraulics(q,filterUnit.largoFV,  filterUnit.curvasFV||0);
+        if(q&&filterUnit.largoDesc) filterUnit.resultDesc=hydraulics(q,filterUnit.largoDesc,filterUnit.curvasDesc||0);
+      }
+
+      selSeg=null; selNode=null; selFilter=false; criticalPath=[];
+      showEmpty(); updateTotals(); render();
+      alert('✅ Proyecto cargado correctamente.');
+    } catch(err){
+      alert('❌ Error al cargar el archivo:\n'+err.message);
+    }
+    // Limpiar input para permitir recargar el mismo archivo
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function clearAll(){
+  if(!confirm('¿Limpiar todo el diseño?')) return;
+  segs=[];nodes=[];filterUnit=null;criticalPath=[];
+  selSeg=null;selNode=null;selFilter=false;
+  drawing=false;wip=[];segCtr=0;nodeCtr=0;
+  showEmpty();updateTotals();
+  document.getElementById('clbl').textContent='Tramos: 0 | Nodos: 0';
+  document.getElementById('nsum').innerHTML='Sin datos todavía.';
+  render();
+}
+
+function doExport(){
+  if(segs.length===0){alert('No hay datos para exportar.');return;}
+  let csv='Tramo,Caudal(m³/min),Largo(m),Curvas,Diám.calc(mm),Diám.com(mm),Esp.(mm),Vel.real(m/s),ΔP fric(mmca),ΔP curv(mmca),ΔP total(mmca),Área chapa(m²),Peso(kg),Costo($)\n';
+  for(let s of segs){
+    const r=s.result;
+    csv+=r?`S${s.id},${s.caudal},${s.largo},${s.curvas},${r.d_calc},${r.diametro},${r.espesor},${r.v_real},${r.dpF},${r.dpC},${r.dpT},${r.area_ch},${r.peso},${r.costo}\n`
+          :`S${s.id},${s.caudal||''},${s.largo||''},${s.curvas||0},,,,,,,,,,\n`;
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='ductos_calculo.csv'; a.click();
+}
+
+render();
+</script>
+</body>
+</html>
